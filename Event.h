@@ -1,5 +1,5 @@
-#ifndef _Event_h
-#define _Event_h
+#ifndef _Event_h_
+#define _Event_h_
 
 #include <inttypes.h>
 #include <Variant.h>

@@ -1,5 +1,5 @@
-#ifndef _IEventListener_h
-#define _IEventListener_h
+#ifndef _IEventListener_h_
+#define _IEventListener_h_
 
 #include "Event.h"
 

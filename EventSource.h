@@ -1,9 +1,10 @@
-#ifndef _EventSource_h
-#define _EventSource_h
+#ifndef _EventSource_h_
+#define _EventSource_h_
 
 #include <inttypes.h>
 #include <Variant.h>
 #include "IPollable.h"
+#include "EventCodes.h"
 #include "IEventListener.h"
 
 

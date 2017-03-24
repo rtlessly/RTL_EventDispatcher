@@ -25,7 +25,7 @@ linked list. To allow them to do that, IEventListener declares EventSource as a
 friend class so it can access the private _nextEventListener member.
 *******************************************************************************/
 
-EVENT_ID EventSource::_nextEventID = 1;
+EVENT_ID EventSource::_nextEventID = EventSourceID::CustomEventBegin;
 
 
 static DebugHelper Debug("EventSource");
