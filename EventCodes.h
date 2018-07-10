@@ -17,9 +17,9 @@ class EventSourceID
         StepperMotorController = 0x0900,
         MovementController     = 0x0A00,
         InertialReference      = 0x0B00,
-        GuidanceController     = 0x0C00,
-        
-        CustomEventBegin       = 0xF000
+        Navigation             = 0x0C00,
+        Task                   = 0x0D00,
+        CustomEvent            = 0xF000
     };
 };
 
@@ -42,8 +42,25 @@ class EventCode
         TurnEnd        = 0x000C,    // Ended a turn
         Moved          = 0x000D,    // Moved by a certain amount
         Turned         = 0x000E,    // Turned by a certain amount
-        GuidanceCmd    = 0x000F     // Sent a guidance command
+        Started        = 0x0010,    // Something has started
+        Complete       = 0x0011,    // Something has completed
+        Aborted        = 0x0012,    // Something has aborted
+        Response       = 0x0013,    // A response event
+        Notify         = 0x0014,    // A notification event
+        SpinBegin      = 0x0015,    // Began a spin
+        SpinEnd        = 0x0016,    // Ended a spin
     };
+};
+
+
+enum CommonEvents_enum
+{
+    TimerFiredEvent   = EventSourceID::Timer      | EventCode::DefaultEvent,
+    NavigationEvent   = EventSourceID::Navigation | EventCode::DefaultEvent,
+    TaskStartedEvent  = EventSourceID::Task       | EventCode::Started,
+    TaskCompleteEvent = EventSourceID::Task       | EventCode::Complete,
+    TaskAbortedEvent  = EventSourceID::Task       | EventCode::Aborted,
+    TaskResponseEvent = EventSourceID::Task       | EventCode::Response,
 };
 
 #endif

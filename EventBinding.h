@@ -6,10 +6,10 @@
 
 
 /*******************************************************************************
-Defines a binding between to an Event Source.
+Defines a binding between an EventSource and an EventListener.
 
-An event binding is an intermediary between an EventSource and an event listener.
-Event listeners attach themselves to an EventSource through an event binding.
+An event binding is an intermediary between an event source and an event listener
+that connects the two together.
 
 Event bindings attach themselves (aka 'bind') to an EventSource by calling the
 EventSource::AddBinding() method. The EventSource will then send event notifications
@@ -17,10 +17,10 @@ to the binding's DispatchEvent() method where the binding forwards the event to
 the associated event listener.
 
 Multiple bindings can be bound to the same EventSource. The bindings are chained
-together as a linked list through the _nextBinding member. The AddBindng() and
+together as a linked list through the _nextLink member. The AddBindng() and
 RemoveBinding() methods of the EventSource class manage this linked list. To allow
 them to do that, IEventBinding declares EventSource as a friend class so it can
-access the private _nextBinding member.
+access the private _nextLink member.
 
 Event bindings are needed to handle the many-to-many relationship between EventSources
 and event listeners. Without bindings, multiple listeners attached to the same
@@ -35,20 +35,22 @@ class IEventBinding
 {
     friend class EventSource;
 
-    protected: IEventBinding() : _source(NULL) { };
+    protected: IEventBinding() : _nextLink(NULL) { };
 
-    protected: ~IEventBinding() { Unbind(); };
+    public: void BindTo(EventSource& source) 
+    { 
+        source.Attach(*this); 
+    };
 
-    public:    void Unbind() { if (_source != NULL) { _source->Detach(*this); _source = NULL; } };
+    protected: void Unlink(IEventBinding*& prevLink) 
+    {
+        prevLink == _nextLink;
+        _nextLink = NULL;
+    }
 
-    protected: virtual void DispatchEvent(const Event* pEvent) = 0;
+    protected: virtual void DispatchEvent(Event& event) = 0;
 
-    //==========================================================================
-    // Internal state
-    //==========================================================================
-    private: IEventBinding* _nextBinding;
-
-    private: EventSource* _source;
+    protected: IEventBinding* _nextLink;
 };
 
 
@@ -60,19 +62,19 @@ class EventBinding : public IEventBinding
     friend class EventSource;
 
     public: EventBinding() : _pListener(NULL) { };
-
     public: EventBinding(IEventListener& listener) : _pListener(&listener) { };
 
-    public: Bind(IEventListener& listener, EventSource& source) { Unbind(); _pListener = &listener; source.Attach(listener, this); };
-    
-    protected: virtual void DispatchEvent(const Event* pEvent)
-    {
-        if (_pListener != NULL) _pListener->OnEvent(pEvent);
+    public: void Bind(IEventListener& listener, EventSource& source) 
+    { 
+        _pListener = &listener;
+        source.Attach(*this); 
     };
-
-    //==========================================================================
-    // Internal state
-    //==========================================================================
+    
+    protected: void DispatchEvent(Event& event)
+    {
+        if (_pListener != NULL) _pListener->OnEvent(&event);
+    };
+    
     private: IEventListener* _pListener;
 };
 
@@ -87,17 +89,19 @@ class StaticEventBinding : public IEventBinding
     friend class EventSource;
 
     public: StaticEventBinding() : _pfEventListener(NULL) { };
-
     public: StaticEventBinding(EVENT_LISTENER pfEventListener) : _pfEventListener(pfEventListener) { };
 
-    protected: virtual void DispatchEvent(const Event* pEvent)
-    {
-        if (_pfEventListener != NULL) (*_pfEventListener)(pEvent);
+    public: void Bind(EVENT_LISTENER pfEventListener, EventSource& source) 
+    { 
+        _pfEventListener = pfEventListener; 
+        source.Attach(*this); 
     };
 
-    //==========================================================================
-    // Internal state
-    //==========================================================================
+    protected: virtual void DispatchEvent(Event& event)
+    {
+        if (_pfEventListener != NULL) (*_pfEventListener)(&event);
+    };
+
     private: EVENT_LISTENER _pfEventListener;
 };
 
