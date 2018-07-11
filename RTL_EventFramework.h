@@ -10,6 +10,6 @@
 #include "IEventListener.h"
 #include "EventSource.h"
 #include "EventBinding.h"
-#include "Scheduler.h"
+#include "EventDispatcher.h"
 
 #endif

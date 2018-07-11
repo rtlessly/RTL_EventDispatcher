@@ -17,7 +17,7 @@ to the binding's DispatchEvent() method where the binding forwards the event to
 the associated event listener.
 
 Multiple bindings can be bound to the same EventSource. The bindings are chained
-together as a linked list through the _nextLink member. The AddBindng() and
+together as a linked list through the _nextLink member. The AddBinding() and
 RemoveBinding() methods of the EventSource class manage this linked list. To allow
 them to do that, IEventBinding declares EventSource as a friend class so it can
 access the private _nextLink member.

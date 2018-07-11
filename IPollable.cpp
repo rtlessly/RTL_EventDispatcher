@@ -1,12 +1,12 @@
 #include <Arduino.h>
-#include "Scheduler.h"
+#include "EventDispatcher.h"
 
 
 IPollable::IPollable(bool autoAdd) 
 { 
     _id = "?";
 
-    if (autoAdd) Scheduler::Add(*this); 
+    if (autoAdd) EventDispatcher::Add(*this); 
 }
 
 

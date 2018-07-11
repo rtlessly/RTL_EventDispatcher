@@ -3,17 +3,17 @@
 #include <Arduino.h>
 #include <RTL_Debug.h>
 #include "EventSource.h"
-#include "Scheduler.h"
+#include "EventDispatcher.h"
 
 
 /*******************************************************************************
 Global poller and event dispatcher.
 
-Scheduler is a global static singleton that polls objects and dispatches events
-in a program. Objects register with the Scheduler via the Add() methods and then
-the Scheduler invokes the Poll() method of each Object.
+EventDispatcher is a global static singleton that polls objects and dispatches events
+in a program. Objects register with the EventDispatcher via the Add() methods and then
+the EventDispatcher invokes the Poll() method of each Object.
 
-The Scheduler::DispatchEvents() method should be invoked on every iteration
+The EventDispatcher::DispatchEvents() method should be invoked on every iteration
 of the sketch's loop() method. The DispatchEvent() method only polls one object
 per iteration. That is, it will poll the first object on the first iteration, the
 second object on the second iteration, and so on. When it reaches the end of the
@@ -22,22 +22,21 @@ iteration of the loop() method to finish as quickly as possible, while still
 ensuring that all objects are polled in a timely fashion.
 *******************************************************************************/
 
-//static DebugHelper Debug("Scheduler");
-DEFINE_CLASSNAME(Scheduler);
+DEFINE_CLASSNAME(EventDispatcher);
 
-IPollable* Scheduler::_first;
-IPollable* Scheduler::_current;
+IPollable* EventDispatcher::_first;
+IPollable* EventDispatcher::_current;
 
-Event   Scheduler::_queue[QUEUE_SIZE];
-uint8_t Scheduler::_queueHead = 0;
-uint8_t Scheduler::_queueTail = 0;
-uint8_t Scheduler::_queueCount = 0;
+Event   EventDispatcher::_queue[QUEUE_SIZE];
+uint8_t EventDispatcher::_queueHead = 0;
+uint8_t EventDispatcher::_queueTail = 0;
+uint8_t EventDispatcher::_queueCount = 0;
 
 
 //******************************************************************************
 // Add a poll-able object the polling list
 //******************************************************************************
-void Scheduler::Add(IPollable& obj)
+void EventDispatcher::Add(IPollable& obj)
 {
     // If the linked list anchor is empty then we just add the object there
     if (_first == NULL)
@@ -66,9 +65,9 @@ void Scheduler::Add(IPollable& obj)
 
 
 //******************************************************************************
-// Add a poll-able function the polling list
+// Add a poll-able function to the polling list
 //******************************************************************************
-IPollable* Scheduler::Add(POLL_FUNCTION pfPollFunction)
+IPollable* EventDispatcher::Add(POLL_FUNCTION pfPollFunction)
 {
     IPollable* pollObj = new PollableDelegate(pfPollFunction);
 
@@ -81,7 +80,7 @@ IPollable* Scheduler::Add(POLL_FUNCTION pfPollFunction)
 //******************************************************************************
 // Removes an object from the polling list
 //******************************************************************************
-void Scheduler::Remove(IPollable& obj)
+void EventDispatcher::Remove(IPollable& obj)
 {
     // Special case if obj is the anchor object of the linked-list
     if (_first == &obj)
@@ -114,7 +113,7 @@ void Scheduler::Remove(IPollable& obj)
 //******************************************************************************
 // Queues an event to the event queue
 //******************************************************************************
-bool Scheduler::Queue(Event& event)
+bool EventDispatcher::Queue(Event& event)
 {
     /*
     Interrupts MUST be disabled while an event is being queued to ensure stability
@@ -159,7 +158,7 @@ bool Scheduler::Queue(Event& event)
 }
 
 
-bool Scheduler::Dequeue(Event& event)
+bool EventDispatcher::Dequeue(Event& event)
 {
     TRACE(Logger(_classname_, __func__) << endl);
 
@@ -199,7 +198,7 @@ bool Scheduler::Dequeue(Event& event)
 //******************************************************************************
 // Polls all sources to dispatch events
 //******************************************************************************
-void Scheduler::DispatchEvents()
+void EventDispatcher::DispatchEvents()
 {
 #if DEBUG
    for (auto p = _first; p != NULL; p = p->_nextObject)
@@ -216,8 +215,6 @@ void Scheduler::DispatchEvents()
         _current->Poll();
         _current = (_current->_nextObject != NULL) ? _current->_nextObject : _first;
     }
-
-//    return;
 
     // Remember the queue tail index before we start dispatching events. This
     // ensures that we only go around the queue at most 1 time. Any new events

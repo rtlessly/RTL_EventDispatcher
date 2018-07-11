@@ -34,17 +34,17 @@ the head of this linked list. The Attach() and Detach() methods manage this link
 list. To allow them to do that, IEventBinding declares EventSource as a friend class
 so it can access the private _nextEventListener member.
 
-EventSources attach themselves to the global Scheduler object when they are
-created. The Scheduler then calls the Poll() method of each EventSource
+EventSources attach themselves to the global EventDispatcher object when they are
+created. The EventDispatcher then calls the Poll() method of each EventSource
 whenever its DispatchEvents() method is called. To ensure events are detected
-and dispatched as expeditiously as possible, the Scheduler::DispatchEvents()
+and dispatched as expeditiously as possible, the EventDispatcher::DispatchEvents()
 method should be called on every iteration in a sketch's loop() method.
 *******************************************************************************/
 class EventSource : public IPollable    // Size = 6 + Base(2) = 8
 {
-	DECLARE_CLASSNAME;
-	
-    friend class Scheduler;
+    DECLARE_CLASSNAME;
+    
+    friend class EventDispatcher;
     friend class IEventBinding;
 
     /***************************************************************************

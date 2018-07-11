@@ -1,24 +1,25 @@
-#ifndef _Scheduler_h_
-#define _Scheduler_h_
+#ifndef _EventDispatcher_h_
+#define _EventDispatcher_h_
 
 #include <RTL_StdLib.h>
 #include "IPollable.h"
 #include "Event.h"
 
+
 /*******************************************************************************
 Global scheduler and event dispatcher.
 
-Scheduler is a global static singleton that polls objects and dispatches events 
-in a program. Objects that implement IPollable register with the Scheduler and 
-then the Scheduler periodically invokes the Poll() method of each one. 
+EventDispatcher is a global static singleton that polls objects and dispatches 
+events in a program. Objects that implement IPollable register with the EventDispatcher
+and then the EventDispatcher periodically invokes the Poll() method of each one. 
 The DispatchEvents() method must be invoked in the sketch's loop() method.
 
-Even though EventSources are the most common kind of objects polled by the Scheduler,
+Even though EventSources are the most common kind of objects polled by the EventDispatcher,
 other kinds of objects can also polled as long as they implement the IPollable interface.
 *******************************************************************************/
-class Scheduler       // size = 71 bytes
+class EventDispatcher       // size = 71 bytes
 {
-	DECLARE_CLASSNAME;
+    DECLARE_CLASSNAME;
 
     private: static const int QUEUE_SIZE = 8;
 
@@ -26,11 +27,15 @@ class Scheduler       // size = 71 bytes
      Constructors
     ***************************************************************************/
     // Private constructor prevents instances from being created
-    private: Scheduler() {};
+    private: EventDispatcher() {};
 
     /***************************************************************************
     Public Methods
     ***************************************************************************/
+
+    /// Polls the registered poll-able objects.
+    /// This method must be called from the Sketch's loop() method.
+    public: static void DispatchEvents();
 
     /// Adds a poll-able object
     public: static void Add(IPollable& obj);
@@ -44,10 +49,6 @@ class Scheduler       // size = 71 bytes
     public: static bool Queue(Event& event);
 
     //public: static bool Queue(EventSource& source, Event& event);
-
-    /// Polls the registered poll-able objects.
-    /// This method must be called from the Sketch's loop() method.
-    public: static void DispatchEvents();
 
     /// De-queues an event from the event queue.
     public: static bool Dequeue(Event& event);
@@ -63,7 +64,7 @@ class Scheduler       // size = 71 bytes
     private: static uint8_t _queueTail;         // size = 1
     private: static uint8_t _queueCount;        // size = 1
 
-    /// The first object in the Scheduler's polling list (linked list)
+    /// The first object in the EventDispatcher's polling list (linked list)
     private: static IPollable* _first;          // size = 2
 
     /// The current object being polled

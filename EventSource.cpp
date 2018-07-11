@@ -116,7 +116,7 @@ void EventSource::QueueEvent(EVENT_ID eventID, variant_t eventData)
 
     Event event(eventID, eventData); { event.Source = this; }
 
-    Scheduler::Queue(event);
+    EventDispatcher::Queue(event);
 }
 
 
@@ -129,7 +129,7 @@ void EventSource::QueueEvent(Event& event)
 
     event.Source = this;
 
-    Scheduler::Queue(event);
+    EventDispatcher::Queue(event);
 }
 
 
