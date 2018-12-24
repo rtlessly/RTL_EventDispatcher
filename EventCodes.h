@@ -19,6 +19,7 @@ class EventSourceID
         InertialReference      = 0x0B00,
         Navigation             = 0x0C00,
         Task                   = 0x0D00,
+        Keypad                 = 0x0E00,
         CustomEvent            = 0xF000
     };
 };
@@ -49,6 +50,7 @@ class EventCode
         Notify         = 0x0014,    // A notification event
         SpinBegin      = 0x0015,    // Began a spin
         SpinEnd        = 0x0016,    // Ended a spin
+		KeyPressed     = 0x0017,    // A key was pressed on a keypad
     };
 };
 

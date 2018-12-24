@@ -9,9 +9,9 @@
 /*******************************************************************************
 Global poller and event dispatcher.
 
-EventDispatcher is a global static singleton that polls objects and dispatches events
-in a program. Objects register with the EventDispatcher via the Add() methods and then
-the EventDispatcher invokes the Poll() method of each Object.
+EventDispatcher is a global static singleton that polls objects and dispatches 
+events in a program. Objects register with the EventDispatcher via the Add() methods
+and then the EventDispatcher invokes the Poll() method of each Object.
 
 The EventDispatcher::DispatchEvents() method should be invoked on every iteration
 of the sketch's loop() method. The DispatchEvent() method only polls one object
