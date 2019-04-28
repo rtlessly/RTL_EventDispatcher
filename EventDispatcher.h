@@ -15,7 +15,8 @@ and then the EventDispatcher periodically invokes the Poll() method of each one.
 The DispatchEvents() method must be invoked in the sketch's loop() method.
 
 Even though EventSources are the most common kind of objects polled by the EventDispatcher,
-other kinds of objects can also polled as long as they implement the IPollable interface.
+other kinds of objects can also be polled as long as they implement the IPollable 
+interface and register with the EventDispatcher.
 *******************************************************************************/
 class EventDispatcher       // size = 71 bytes
 {
@@ -54,6 +55,21 @@ class EventDispatcher       // size = 71 bytes
     public: static bool Dequeue(Event& event);
 
     /***************************************************************************
+    Internal implementation
+    ***************************************************************************/
+    private: inline static void _Dequeue(Event& event)
+    {
+        noInterrupts(); // ATOMIC BLOCK BEGIN
+
+        event = _queue[_queueHead];
+        _queueHead = (_queueHead + 1) % QUEUE_SIZE;
+        _queueCount--;
+
+        interrupts(); // ATOMIC BLOCK END
+    }
+    
+    
+    /***************************************************************************
     Internal state
     ***************************************************************************/
     /// The event queue 
@@ -62,7 +78,7 @@ class EventDispatcher       // size = 71 bytes
     /// The event queue head and tail pointers
     private: static uint8_t _queueHead;         // size = 1
     private: static uint8_t _queueTail;         // size = 1
-    private: static uint8_t _queueCount;        // size = 1
+    private: static int8_t  _queueCount;        // size = 1
 
     /// The first object in the EventDispatcher's polling list (linked list)
     private: static IPollable* _first;          // size = 2

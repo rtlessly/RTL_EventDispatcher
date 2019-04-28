@@ -22,7 +22,7 @@ void EventSource::Attach(IEventBinding& binding)
     // Insert the new binding at the head of the linked list
     binding._nextLink = (_firstBinding != NULL) ? _firstBinding : NULL;
     _firstBinding = &binding;
-    TRACE(Logger(_classname_, __func__, this) << F(", binding=") << _HEX(PTR(&binding)) << endl);
+    TRACE(Logger(_classname_, this) << F("Attach: binding=") << _HEX(PTR(&binding)) << endl);
 }
 
 
@@ -112,7 +112,7 @@ void EventSource::Detach(IEventBinding& binding)
 //******************************************************************************
 void EventSource::QueueEvent(EVENT_ID eventID, variant_t eventData)
 {
-    TRACE(Logger(_classname_, __func__, this) << F(", eventID=") << _HEX(eventID) << endl);
+    TRACE(Logger(_classname_, this) << F("QueueEvent: eventID=") << _HEX(eventID) << endl);
 
     Event event(eventID, eventData); { event.Source = this; }
 
@@ -125,7 +125,7 @@ void EventSource::QueueEvent(EVENT_ID eventID, variant_t eventData)
 //******************************************************************************
 void EventSource::QueueEvent(Event& event)
 {
-    TRACE(Logger(_classname_, __func__, this) << F(", eventID=") << _HEX(event.EventID) << endl);
+    TRACE(Logger(_classname_, this) << F("QueueEvent: eventID=") << _HEX(event.EventID) << endl);
 
     event.Source = this;
 
@@ -150,7 +150,7 @@ void EventSource::DispatchEvent(EVENT_ID eventID, variant_t eventData)
 //******************************************************************************
 void EventSource::DispatchEvent(Event& event)
 {
-    TRACE(Logger(_classname_, __func__, this) << F(", eventID=") << _HEX(event.EventID) << endl);
+    TRACE(Logger(_classname_, this) << F("DispatchEvent: eventID=") << _HEX(event.EventID) << endl);
 
     for (IEventBinding* pBinding = _firstBinding; pBinding != NULL; pBinding = pBinding->_nextLink)
     {

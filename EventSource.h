@@ -73,7 +73,7 @@ class EventSource : public IPollable    // Size = 6 + Base(2) = 8
     /// Determines if the source has any listeners attached
     public: bool HasListeners() { return _firstBinding != NULL; };
 
-    /// Returns a new unique event ID with every call. Used to assign event IDs
+    /// Returns a new unique event ID with every call. Used to assign dynamic event IDs
     public: static EVENT_ID GenerateEventID() { return _nextEventID++; }
 
     /***************************************************************************
